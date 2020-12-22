@@ -40,7 +40,8 @@ for i, sell_orders in enumerate(soup.find_all('td', class_='seventh')):
 
 ## POPULATE DB
 for stock in stocks:
-    print(stock)
+    for i in range(len(stock)):
+        print(stock[i])
 
 conn.close()
 
