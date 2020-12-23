@@ -2,17 +2,15 @@ from bs4 import BeautifulSoup
 import requests
 import sqlite3
 
-def main():
-    try:
-        conn = sqlite3.connect('popular_tickers.db')
-    except Exception as err:
-        print("Error Connecting to Database")
+try:
+    conn = sqlite3.connect('popular_tickers.db')
+except Exception as err:
+    print("Error Connecting to Database")
         
-    r = requests.get("https://eresearch.fidelity.com/eresearch/gotoBL/fidelityTopOrders.jhtml")
-    soup = BeautifulSoup(r.content)
+r = requests.get("https://eresearch.fidelity.com/eresearch/gotoBL/fidelityTopOrders.jhtml")
+soup = BeautifulSoup(r.content)
 
-    # result = conn.execute("SELECT * FROM stocks")
-
+def main():
     stocks = []
 
     for ticker_tag in soup.find_all('td', class_='second'):
@@ -38,22 +36,22 @@ def main():
         sell_amount = int(sell_amount)
         stocks[i].append(sell_amount)
 
+    print(stocks)
     ## POPULATE DB
     for stock in stocks:
         addToDb(stock)
 
-    conn.close()
-
 
 def addToDb(stock):
-    print(stock[0])
+    conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES (:ticker, :company, :price, :buys, :sells);", {'ticker': stock[0], 'company': stock[1], 'price': stock[2], 'buys': stock[3],'sells': stock[4]})
 
-
+    #conn.execute("UPDATE ")
+    conn.commit()
+    #conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES ('AAPL', 'APPLE', -2.00, 10, 20);")
 
 main()
 
-
-
+conn.close()
 
 ## QUERY DB ON TICKER SYMBOL
 '''
