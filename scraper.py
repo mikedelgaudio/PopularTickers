@@ -63,37 +63,6 @@ def addToDb(stock, conn):
     conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES (:ticker, :company, :price, :buys, :sells);", {'ticker': stock[0], 'company': stock[1], 'price': stock[2], 'buys': stock[3],'sells': stock[4]})
     conn.commit()
     print("executed")
-
-# def emailMe():
-#     port = 465 
-#     smtp_server = "mail.delgaudiomike.com"
-#     sender_email = os.environ.get("EMAIL_USER") 
-#     receiver_email = "delgaudiomike@gmail.com" 
-#     password = os.environ.get("EMAIL_PASS")
-#     message = MIMEMultipart("alternative")
-#     message["Subject"] = "[POPULAR TICKERS] {}".format(date.today().strftime("%m/%d/%y"))
-#     message["From"] = sender_email
-#     message["To"] = receiver_email
-
-#     html = """\
-#     <html>
-#     <body>
-#         <h1>Today's most popular trade: ''</h1>
-#         <h2>Most frequent for this week: ''</h2>
-#         <h2>Here are new tickers that first appeared today: ''</h2>
-#     </body>
-#     </html>
-#     """
-#     part2 = MIMEText(html, "html")
-#     message.attach(part2)
-#     try:
-#         server = smtplib.SMTP_SSL(smtp_server, port)
-#         server.login(sender_email, password)
-#         server.sendmail(sender_email, receiver_email, message.as_bytes())
-#     except Exception as err:
-#         print(err)
-#     finally:
-#         server.quit()
    
 
 def allMostPopular(conn):
