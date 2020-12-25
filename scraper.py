@@ -1,12 +1,12 @@
+from sqlite3.dbapi2 import Date
 from bs4 import BeautifulSoup
 import requests
 import sqlite3
 import time
 import schedule
-import smtplib
 from dotenv import load_dotenv
 import os
-  
+from notifications import emailMe
 
 
 
@@ -20,7 +20,7 @@ def main():
 
     try:
         r = requests.get("https://eresearch.fidelity.com/eresearch/gotoBL/fidelityTopOrders.jhtml")
-        soup = BeautifulSoup(r.content)
+        soup = BeautifulSoup(r.content, features="html.parser")
     except Exception as err:
         print("Error grabbing page: {0}".format(err))
         conn.close()
@@ -64,14 +64,36 @@ def addToDb(stock, conn):
     conn.commit()
     print("executed")
 
-def emailMe():
-    try: 
-        s = smtplib.SMTP(host="mail.delgaudiomike.com", port=465)
-        s.starttls()
-        x = s.login(os.environ.get("EMAIL_USER"), os.environ.get("EMAIL_PASS"))
-        print(x)
-    except Exception as err:
-        pass
+# def emailMe():
+#     port = 465 
+#     smtp_server = "mail.delgaudiomike.com"
+#     sender_email = os.environ.get("EMAIL_USER") 
+#     receiver_email = "delgaudiomike@gmail.com" 
+#     password = os.environ.get("EMAIL_PASS")
+#     message = MIMEMultipart("alternative")
+#     message["Subject"] = "[POPULAR TICKERS] {}".format(date.today().strftime("%m/%d/%y"))
+#     message["From"] = sender_email
+#     message["To"] = receiver_email
+
+#     html = """\
+#     <html>
+#     <body>
+#         <h1>Today's most popular trade: ''</h1>
+#         <h2>Most frequent for this week: ''</h2>
+#         <h2>Here are new tickers that first appeared today: ''</h2>
+#     </body>
+#     </html>
+#     """
+#     part2 = MIMEText(html, "html")
+#     message.attach(part2)
+#     try:
+#         server = smtplib.SMTP_SSL(smtp_server, port)
+#         server.login(sender_email, password)
+#         server.sendmail(sender_email, receiver_email, message.as_bytes())
+#     except Exception as err:
+#         print(err)
+#     finally:
+#         server.quit()
    
 
 def allMostPopular(conn):
@@ -86,3 +108,5 @@ main()
 #     schedule.run_pending()
 #     time.sleep(60)
 #     print("running")
+
+# Protect against INSERT in less than 24hrs for debug or add a debug mode
