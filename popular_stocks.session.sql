@@ -8,4 +8,7 @@
 --     time DATETIME DEFAULT CURRENT_TIMESTAMP
 -- )
 
-SELECT ticker, COUNT(*) AS frequency FROM stocks GROUP BY ticker ORDER BY frequency DESC 
+-- SELECT ticker, COUNT(*) AS frequency FROM stocks GROUP BY ticker ORDER BY frequency DESC 
+
+
+SELECT ticker, time FROM stocks WHERE time BETWEEN '20-12-24' AND '20-12-27'

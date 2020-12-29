@@ -5,7 +5,7 @@ import sqlite3
 import time
 import schedule
 from dotenv import load_dotenv
-import os
+from datetime import date, datetime, timedelta
 from notifications import emailMe
 
 
@@ -49,20 +49,32 @@ def main():
         stocks[i].append(sell_amount)
 
     for stock in stocks:
-        #addToDb(stock, conn)
-        pass
+        addToDb(stock, conn)
+        #pass
 
-    emailMe()
+    #emailMe()
+
     
+
     conn.close()
 
 def addToDb(stock, conn):
     '''
     If stock at [0] == ticker && price of previous day do not insert (means it was a holiday)
     '''
-    conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES (:ticker, :company, :price, :buys, :sells);", {'ticker': stock[0], 'company': stock[1], 'price': stock[2], 'buys': stock[3],'sells': stock[4]})
-    conn.commit()
-    print("executed")
+    # Protect against running in less than 24hrs
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow_formatted = tomorrow.strftime('%Y/%m/%d')
+
+    c = conn.execute("SELECT ticker, time FROM stocks WHERE time BETWEEN '{0}' AND '{1}'".format(date.today(), tomorrow_formatted))
+    print(c.fetchone())
+    
+    #No results yet pushed in for today so insert
+    if(c.fetchone() != ""):
+        print("EMPTY")
+        return
+    #conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES (:ticker, :company, :price, :buys, :sells);", {'ticker': stock[0], 'company': stock[1], 'price': stock[2], 'buys': stock[3],'sells': stock[4]})
+    #conn.commit()
    
 
 def allMostPopular(conn):
