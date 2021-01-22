@@ -13,4 +13,12 @@
 
 -- SELECT ticker, time FROM stocks WHERE time BETWEEN '20-12-24' AND '20-12-27'
 
-SELECT * FROM stocks
+-- SELECT ticker, 
+-- time, 
+-- COUNT(*) AS frequency 
+-- FROM stocks 
+-- WHERE time > '2021-01-01'
+-- GROUP BY ticker 
+-- ORDER BY frequency 
+-- DESC
+-- LIMIT 10

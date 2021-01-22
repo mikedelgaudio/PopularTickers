@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from datetime import date
 import os
   
-def emailMe():
+def emailMe(freqQuery):
     port = 465 
     smtp_server = "mail.delgaudiomike.com"
     sender_email = os.environ.get("EMAIL_USER") 
@@ -17,14 +17,25 @@ def emailMe():
     message["To"] = receiver_email
 
     html = """\
-    <html>
-    <body>
-        <h1>Today's most popular trade: ''</h1>
-        <h2>Most frequent for this week: ''</h2>
-        <h2>Here are new tickers that first appeared today: ''</h2>
     </body>
     </html>
     """
+    html = """\
+    <html>
+    <body>
+    <h2>Here are the most frequent tickers in the past 7 days:</h2>
+    <table border='1'>
+    <tr><th>Stock Ticker</th><th>Date</th><th>Frequency</th></tr>"""
+    for row in freqQuery:
+        html = html + "<tr>"
+        for col in row:
+            html = html + "<td>" + str(col) + "</td>"
+        html = html + "</tr>"
+    html = html + "</table>"
+    html = html + """\
+    </body>
+    </html>
+    """    
     part2 = MIMEText(html, "html")
     message.attach(part2)
     try:
@@ -35,3 +46,4 @@ def emailMe():
         print(err)
     finally:
         server.quit()
+ 

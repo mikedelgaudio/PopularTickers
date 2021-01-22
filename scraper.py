@@ -50,12 +50,8 @@ def main():
 
     for stock in stocks:
         addToDb(stock, conn)
-        #pass
-
-    #emailMe()
-
-    
-
+        
+    emailMe(allMostPopular(conn))
     conn.close()
 
 def addToDb(stock, conn):
@@ -66,20 +62,20 @@ def addToDb(stock, conn):
     tomorrow = datetime.now() + timedelta(days=1)
     tomorrow_formatted = tomorrow.strftime('%Y/%m/%d')
 
-    c = conn.execute("SELECT ticker, time FROM stocks WHERE time BETWEEN '{0}' AND '{1}'".format(date.today(), tomorrow_formatted))
-    print(c.fetchone())
-    
+    c = conn.execute("SELECT ticker, time FROM stocks WHERE time BETWEEN '{0}' AND '{1}' LIMIT 1".format(date.today(), tomorrow_formatted))
+
     #No results yet pushed in for today so insert
-    if(c.fetchone() != ""):
-        print("EMPTY")
-        return
-    #conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES (:ticker, :company, :price, :buys, :sells);", {'ticker': stock[0], 'company': stock[1], 'price': stock[2], 'buys': stock[3],'sells': stock[4]})
-    #conn.commit()
-   
+    if(c.fetchone() == ""):
+        print("No results were added on '{0}'. Adding now...".format(date.today()))
+        conn.execute("INSERT INTO stocks (ticker, company, price_change, buys, sells) VALUES (:ticker, :company, :price, :buys, :sells);", {'ticker': stock[0], 'company': stock[1], 'price': stock[2], 'buys': stock[3],'sells': stock[4]})
+        conn.commit()
+    
 
 def allMostPopular(conn):
-    c = conn.execute("SELECT ticker, COUNT(*) AS frequency FROM stocks GROUP BY ticker ORDER BY frequency DESC")
-    print(c.fetchall())
+    one_week_ago = datetime.now() - timedelta(days=70)
+    one_week_ago_formatted = one_week_ago.strftime('%Y/%m/%d')
+    c = conn.execute("SELECT ticker, time, COUNT(*) AS frequency FROM stocks WHERE time > '{0}' GROUP BY ticker ORDER BY frequency DESC LIMIT 10".format(one_week_ago_formatted))
+    return c.fetchall()
 
 main()
 
