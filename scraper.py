@@ -72,7 +72,7 @@ def addToDb(stock, conn):
     
 
 def allMostPopular(conn):
-    one_week_ago = datetime.now() - timedelta(days=70)
+    one_week_ago = datetime.now() - timedelta(days=7)
     one_week_ago_formatted = one_week_ago.strftime('%Y/%m/%d')
     c = conn.execute("SELECT ticker, time, COUNT(*) AS frequency FROM stocks WHERE time > '{0}' GROUP BY ticker ORDER BY frequency DESC LIMIT 10".format(one_week_ago_formatted))
     return c.fetchall()
